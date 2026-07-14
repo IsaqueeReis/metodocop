@@ -1,0 +1,26 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Fix 2879/2880: missing declaration? Actually wait, 2879 is ) and 2880 is )}. 
+// wait, 2880 is )}. Let's change the })() at 2886 to }
+// Actually, what was the error at 2880?
+// App.tsx(2880,46): error TS1128: Declaration or statement expected.
+// Wait! "})()" is on 2886!
+// Wait, no. I need to fix:
+content = content.replace(/<\/button>\n                                                 \)\n                                             \)\}/g, '</button>\n                                                 )\n                                             })}');
+
+// 2. Fix 3003
+content = content.replace(/<\/button>\n                            \);\n                        \}/g, '</button>\n                            );\n                        })}');
+
+// 3. Fix 3094
+content = content.replace(/\{filteredHistory\.reduce\(\(acc: number,h\) => acc\+h\.count, 0\n<\/h3>/g, '{filteredHistory.reduce((acc: number,h) => acc+h.count, 0)}\n</h3>');
+
+// 4. Fix 3142 and 3168 (remove )} )
+// We replace </div>)} with </div> in those specific spots. 
+// But we have to be careful. Let's just fix the JSX parent issue first:
+content = content.replace(/<\/div>\) \: \(\n<div className="mb-6 px-4 py-1 rounded bg-zinc-900\/80 text-zinc-400 text-xs font-bold uppercase tracking-wider border border-zinc-800 backdrop-blur-sm">\{subjects/g, '</div>) : (<>\n<div className="mb-6 px-4 py-1 rounded bg-zinc-900/80 text-zinc-400 text-xs font-bold uppercase tracking-wider border border-zinc-800 backdrop-blur-sm">{subjects');
+
+content = content.replace(/<\/button>\n<\/div>\n<\/div>\n<\/div>\n<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">/g, '</button>\n</div></>)}\n</div>\n</div>\n<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 32');

@@ -1,0 +1,48 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: setUserSearchTerm missing )}
+code = code.replace(
+    /onChange=\{e => setUserSearchTerm\(e\.target\.value\r?\n\s*className="bg-black\/40 backdrop-blur-sm border border-white\/10/g,
+    'onChange={e => setUserSearchTerm(e.target.value)}\n                                        className="bg-black/40 backdrop-blur-sm border border-white/10'
+);
+
+// Fix 2: setUserPlanFilter missing )}
+code = code.replace(
+    /onChange=\{e => setUserPlanFilter\(e\.target\.value\r?\n\s*className="bg-black\/40 backdrop-blur-sm border border-white\/10/g,
+    'onChange={e => setUserPlanFilter(e.target.value)}\n                                        className="bg-black/40 backdrop-blur-sm border border-white/10'
+);
+
+// Fix 3: u.name.charAt(0 missing )}
+code = code.replace(
+    /\{u\.name\.charAt\(0\r?\n\s*<\/div>/g,
+    '{u.name.charAt(0)}\n                                            </div>'
+);
+
+// Fix 4: toLocaleDateString(</span>} missing )}
+code = code.replace(
+    /\.toLocaleDateString\(<\/span>\}/g,
+    '.toLocaleDateString()}</span>}'
+);
+
+// Fix 5: handleChangeUserPlan missing )}
+code = code.replace(
+    /onChange=\{\(e\) => handleChangeUserPlan\(u\.id, e\.target\.value\r?\n\s*className="w-full md:w-40 bg-black\/60/g,
+    'onChange={(e) => handleChangeUserPlan(u.id, e.target.value)}\n                                                    className="w-full md:w-40 bg-black/60'
+);
+
+// Fix 6: handleChangeUserEdital missing )}
+code = code.replace(
+    /onChange=\{\(e\) => handleChangeUserEdital\(u\.id, e\.target\.value\r?\n\s*className="w-full md:w-48 bg-black\/60/g,
+    'onChange={(e) => handleChangeUserEdital(u.id, e.target.value)}\n                                                    className="w-full md:w-48 bg-black/60'
+);
+
+// Fix 7: e => <option... in editais missing )}
+code = code.replace(
+    /\{editais\.map\(e => <option key=\{e\.id\} value=\{e\.id\}>\{e\.title\}<\/option>/g,
+    '{editais.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}'
+);
+
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 19');

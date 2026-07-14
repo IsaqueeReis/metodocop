@@ -1,0 +1,37 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix missing )} at line 2330 (after revisões block)
+let lines = content.split('\n');
+for (let i = 2250; i < lines.length; i++) {
+    if (lines[i].includes("{activeTab === 'revisões' && (")) {
+        // find the end of this block
+        for (let j = i + 1; j < lines.length; j++) {
+            if (lines[j].includes("{activeTab === 'simulados' && (")) {
+                if (!lines[j-1].includes(')}')) {
+                    lines.splice(j, 0, '                )}');
+                }
+                break;
+            }
+        }
+        break;
+    }
+}
+
+content = lines.join('\n');
+
+// Fix bestResult.score.toFixed(1
+content = content.replace(/\{bestResult\.score\.toFixed\(1<\/span>/g, '{bestResult.score.toFixed(1)}</span>');
+
+// Fix startSimulado(sim className=
+content = content.replace(/startSimulado\(sim className=/g, 'startSimulado(sim)} className=');
+
+// Fix startSimulado(sim, true, lastResult.studentAnswers className=
+content = content.replace(/startSimulado\(sim, true, lastResult\.studentAnswers className=/g, 'startSimulado(sim, true, lastResult.studentAnswers)} className=');
+
+// Fix missing )} at the end of simulados block (line 2332)
+// The line ends with </p>}</div></div>
+content = content.replace(/<\/p>\}<\/div><\/div>/g, '</p>}</div></div>)}');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 30');

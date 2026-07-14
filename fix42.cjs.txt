@@ -1,0 +1,29 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Fix 3014 - Missing )} after </aside>
+content = content.replace(/<\/aside>\n\n\n            \{\/\* TOP BAR \*\/\}/g, '</aside>\n            )}\n\n            {/* TOP BAR */}');
+
+// 2. Fix 3142 and 3168 (remove )} that is wrong)
+content = content.replace(/<\/div>\)\}\n<div className="bg-\[\#18181b\] border border-zinc-800 p-6 rounded-xl flex flex-col">/g, '</div>\n<div className="bg-[#18181b] border border-zinc-800 p-6 rounded-xl flex flex-col">');
+
+content = content.replace(/<\/div>\)\}\n<\/div>\n<div className="mt-6 bg-\[\#18181b\] border border-zinc-800 p-6 rounded-xl mb-6">/g, '</div>\n</div>\n<div className="mt-6 bg-[#18181b] border border-zinc-800 p-6 rounded-xl mb-6">');
+
+// 3. Fix 3284 and 3292 - Missing )} on onChange
+content = content.replace(/onChange=\{e => setNewRevTopic\(e\.target\.value placeholder="Ex: Crase\.\.\." className=/g, 'onChange={e => setNewRevTopic(e.target.value)} placeholder="Ex: Crase..." className=');
+
+content = content.replace(/onChange=\{e => setNewRevDate\(e\.target\.value className=/g, 'onChange={e => setNewRevDate(e.target.value)} className=');
+
+// 4. Fix 3449 - Missing })} on simulados.map
+content = content.replace(/<\/div>\); \}\{simulados\.length === 0 &&/g, '</div>); })}{simulados.length === 0 &&');
+
+// 5. Fix 3484 and 3511 - Missing )} ?
+// Wait, I haven't seen 3484 and 3511 yet. Let's leave them for now and see if they are fixed.
+// Actually, let's fix 3530 - calculateEditalProgress(%
+// wait! The text was: `calculateEditalProgress(%` 
+// It should be `calculateEditalProgress(editais.find(e => e.id === activeEditalId)?.subjects || [])}%`!
+// Let's replace:
+content = content.replace(/calculateEditalProgress\(%/g, 'calculateEditalProgress(editais.find(e => e.id === activeEditalId)?.subjects || [])}%');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 33');

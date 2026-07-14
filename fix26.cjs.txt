@@ -1,0 +1,48 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: closing the subjects map
+code = code.replace(
+    /<\/div>\r?\n\s*\)\r?\n\s*\}/g,
+    '</div>\n                                )\n                            })}'
+);
+
+// Fix 2: closing the activeTab === 'materials'
+code = code.replace(
+    /\}\r?\n\s*<\/div>\r?\n\s*<\/div>\r?\n\r?\n\s*\{activeTab === 'users' && \(/g,
+    '}\n                        </div>\n                    </div>\n                )}\n\n                {activeTab === \'users\' && ('
+);
+
+// Fix 3: newUserName
+code = code.replace(
+    /onChange=\{e => setNewUserName\(e\.target\.value className="w-full mt-1 bg-black\/40/g,
+    'onChange={e => setNewUserName(e.target.value)} className="w-full mt-1 bg-black/40'
+);
+
+// Fix 4: newUserEmail
+code = code.replace(
+    /onChange=\{e => setNewUserEmail\(e\.target\.value className="w-full mt-1 bg-black\/40/g,
+    'onChange={e => setNewUserEmail(e.target.value)} className="w-full mt-1 bg-black/40'
+);
+
+// Fix 5: newUserPass
+code = code.replace(
+    /onChange=\{e => setNewUserPass\(e\.target\.value className="w-full mt-1 bg-black\/40/g,
+    'onChange={e => setNewUserPass(e.target.value)} className="w-full mt-1 bg-black/40'
+);
+
+// Fix 6: newUserPlan
+code = code.replace(
+    /onChange=\{e => setNewUserPlan\(e\.target\.value className="w-full mt-1 bg-black\/40/g,
+    'onChange={e => setNewUserPlan(e.target.value)} className="w-full mt-1 bg-black/40'
+);
+
+// Fix 7: plans.map(p => <option...
+code = code.replace(
+    /\{plans\.map\(p => <option key=\{p\.id\} value=\{p\.id\}>\{p\.name\}<\/option>\r?\n\s*<\/select>/g,
+    '{plans.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}\n                                    </select>'
+);
+
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 17');

@@ -1,0 +1,17 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix: .toFixed(1h -> .toFixed(1)}h
+content = content.replace(/\.toFixed\(1h/g, '.toFixed(1)}h');
+
+// Fix: {filteredHistory.reduce((acc: number,h) => acc+h.count, 0}</div> -> missing )
+content = content.replace(/\{filteredHistory\.reduce\(\(acc: number,h\) => acc\+h\.count, 0\}<\/div>/g, '{filteredHistory.reduce((acc: number,h) => acc+h.count, 0)}</div>');
+
+// Fix: {result.score.toFixed(1/10</p>
+content = content.replace(/\{result\.score\.toFixed\(1\/10<\/p>/g, '{result.score.toFixed(1)}/10</p>');
+
+// Fix: ); } {recentSimulados.length === 0
+content = content.replace(/\); } \{recentSimulados\.length === 0/g, '); })} {recentSimulados.length === 0');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 29');

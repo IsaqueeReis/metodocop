@@ -1,0 +1,52 @@
+const fs = require('fs');
+let lines = fs.readFileSync('App.tsx', 'utf-8').split('\n');
+
+// 3231: '}' expected
+if (lines[3229].includes('</button></>)')) {
+    lines[3229] = lines[3229].replace('</button></>)', '</button></>)}');
+}
+
+// 3553: ',' expected
+lines[3552] = lines[3552].replace('</div>); }', '</div>); })}');
+
+// 3555: ',' expected
+lines[3554] = lines[3554].replace('</div>); }', '</div>); })}');
+
+// 3558: ')' expected
+if (lines[3557].includes('</>')) {
+    lines[3557] = lines[3557].replace('</>', '</>)}');
+}
+
+// 3561: ')' expected
+if (lines[3560].includes('</div>')) {
+    lines[3560] = lines[3560].replace('</div>', '</div>)}');
+}
+
+// 3563: ')' expected
+if (lines[3562].includes("{activeTab === 'leiseca' && ")) {
+    lines[3562] = lines[3562].replace("{activeTab === 'leiseca' && ", "{activeTab === 'leiseca' && (");
+}
+
+// 3616: ')' expected
+if (lines[3615].includes(")}")) {
+    lines[3615] = lines[3615].replace(")}", "))}");
+}
+
+// 3639: ',' expected
+if (lines[3636].includes('{getAchievementIcon(a.icon, "w-6 h-6"')) {
+    lines[3636] = lines[3636].replace('{getAchievementIcon(a.icon, "w-6 h-6"', '{getAchievementIcon(a.icon, "w-6 h-6")}');
+}
+
+// 3717: ',' expected
+if (lines[3716].includes(')}')) {
+    lines[3716] = lines[3716].replace(')}', '))}');
+}
+
+// Also remove `fix*.cjs` from tsc processing by renaming them to .txt
+const { execSync } = require('child_process');
+try {
+    execSync('ren fix*.cjs fix*.cjs.txt');
+} catch (e) {}
+
+fs.writeFileSync('App.tsx', lines.join('\n'));
+console.log('Fixed block 38 using exact line numbers');

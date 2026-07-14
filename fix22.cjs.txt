@@ -1,0 +1,29 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: newSimPdf onChange missing )}
+code = code.replace(
+    /onChange=\{e => setNewSimPdf\(e\.target\.value placeholder="URL PDF"/g,
+    'onChange={e => setNewSimPdf(e.target.value)} placeholder="URL PDF"'
+);
+
+// Fix 2: newMatTopic onChange missing )}
+code = code.replace(
+    /onChange=\{e => setNewMatTopic\(e\.target\.value placeholder="Ex: Sintaxe"/g,
+    'onChange={e => setNewMatTopic(e.target.value)} placeholder="Ex: Sintaxe"'
+);
+
+// Fix 3: newMatCategory onChange missing )}
+code = code.replace(
+    /onChange=\{e => setNewMatCategory\(e\.target\.value as any className="w-full/g,
+    'onChange={e => setNewMatCategory(e.target.value as any)} className="w-full'
+);
+
+// Fix 4: newMatPdf onChange missing )}
+code = code.replace(
+    /onChange=\{e => setNewMatPdf\(e\.target\.value placeholder="https:\/\/www\.planalto\.gov\.br\/\.\.\."/g,
+    'onChange={e => setNewMatPdf(e.target.value)} placeholder="https://www.planalto.gov.br/..."'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 13');

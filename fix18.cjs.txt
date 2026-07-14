@@ -1,0 +1,63 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: cancel editing plan missing )}
+code = code.replace(
+    /Cancelar\r?\n\s*<\/button>\r?\n\r?\n\s*<\/div>/g,
+    "Cancelar\n                                    </button>\n                                )}\n\n                            </div>"
+);
+
+// Fix 2: plan.allowedTabs.map missing )}
+code = code.replace(
+    /className="text-\[10px\] bg-zinc-800 text-zinc-400 px-2 py-0\.5 rounded-full uppercase font-bold tracking-wider">\{tabId\}<\/span>\r?\n\s*\)\r?\n\s*<\/div>/g,
+    'className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">{tabId}</span>\n                                            ))}\n                                        </div>'
+);
+
+// Fix 3: plan.allowedTabs missing )} closing
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*<div className="mt-4 flex gap-2">/g,
+    '</div>\n                                    )}\n\n                                    <div className="mt-4 flex gap-2">'
+);
+
+// Fix 4: handleDeletePlan missing )}
+code = code.replace(
+    /onClick=\{\(\) => handleDeletePlan\(plan\.id className="bg-red-900\/20/g,
+    'onClick={() => handleDeletePlan(plan.id)} className="bg-red-900/20'
+);
+
+// Fix 5: plans.map missing )}
+code = code.replace(
+    /<\/div>\r?\n\s*\)\r?\n\s*\{plans\.length === 0/g,
+    "</div>\n                            ))}\n                            {plans.length === 0"
+);
+
+// Fix 6: activeTab === 'plans' missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*\{\/\* \.\.\. existing code for other tabs/g,
+    "</div>\n                )}\n\n                {/* ... existing code for other tabs"
+);
+
+// Fix 7: line 1066 fixes (the one-liner)
+// a) onPrompt
+code = code.replace(
+    /onPrompt=\{\(msg, cb\) => showPrompt\('Link', msg, cb \/>/g,
+    "onPrompt={(msg, cb) => showPrompt('Link', msg, cb)} />"
+);
+// b) setTutorialUrls filter
+code = code.replace(
+    /onClick=\{\(\) => setTutorialUrls\(tutorialUrls\.filter\(\(_, idx\) => idx !== i\) className="/g,
+    'onClick={() => setTutorialUrls(tutorialUrls.filter((_, idx) => idx !== i))} className="'
+);
+// c) tutorialUrls.map
+code = code.replace(
+    /<\/button><\/div>\)<div className="flex gap-2 mt-2">/g,
+    '</button></div>))}<div className="flex gap-2 mt-2">'
+);
+// d) setNewTutorialUrl onChange
+code = code.replace(
+    /onChange=\{e => setNewTutorialUrl\(e\.target\.value className="/g,
+    'onChange={e => setNewTutorialUrl(e.target.value)} className="'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 9');

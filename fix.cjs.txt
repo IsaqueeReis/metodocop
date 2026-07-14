@@ -1,0 +1,52 @@
+const fs = require('fs');
+let c = fs.readFileSync('mentoria-individual/AdminPanel.tsx', 'utf8');
+
+const startIdx = c.indexOf('// 2. Gera Tasks das Metas Extras') + 33;
+const endIdx = c.indexOf('              await MentorshipStorage.savePlan(updatedPlan);');
+
+const injected = `
+          const maxDayOffset = generatedItems.reduce((max, item) => Math.max(max, item.dayOffset), 0);
+          const extraTasks: MentorshipTask[] = [];
+          
+          for (let i = 0; i <= maxDayOffset; i++) {
+              const [year, month, day] = startDatePlanner.split('-').map(Number);
+              const date = new Date(year, month - 1, day);
+              date.setDate(date.getDate() + i);
+              
+              const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+              const dayName = DAYS_OF_WEEK[dayIndex < 0 ? 6 : dayIndex];
+              const dateStr = getLocalDateStr(date);
+
+              extraGoals.forEach(goal => {
+                  let shouldAdd = false;
+                  if (goal.frequency === 'DAILY') shouldAdd = true;
+                  else if (goal.frequency === 'CUSTOM' && dayName && goal.selectedDays?.includes(dayName)) shouldAdd = true;
+
+                  if (shouldAdd) {
+                      extraTasks.push({
+                          id: crypto.randomUUID(),
+                          dayOfWeek: dayName,
+                          type: goal.type,
+                          subject: goal.title,
+                          description: goal.description || "Meta Extra Recorrente",
+                          isCompleted: false,
+                          date: dateStr
+                      });
+                  }
+              });
+          }
+
+          const newTasks = [...currentPlan.tasks, ...aiTasks, ...extraTasks];
+          const updatedPlan = {
+              ...currentPlan,
+              tasks: newTasks,
+              originalTasks: newTasks,
+              weeklySchedule: weeklySchedule,
+              xp: currentPlan.xp || 0
+          };
+
+          try {
+`;
+
+c = c.substring(0, startIdx) + injected + c.substring(endIdx);
+fs.writeFileSync('mentoria-individual/AdminPanel.tsx', c);

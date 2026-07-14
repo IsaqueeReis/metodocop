@@ -1,0 +1,53 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: activeTab === 'users' missing )} before </main>
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*<\/main>/,
+    "</div>\n                )}\n            </main>"
+);
+
+// Fix 2: editais map closing in checkboxes (line 1088)
+code = code.replace(
+    /onChange=\{\(\) => toggleAllowedPlan\(p\.id, editalAllowedPlans, setEditalAllowedPlans\)\} \/> \{p\.name\}\r?\n\s*<\/label>\r?\n\s*\)\)\}\)\}/g,
+    "onChange={() => toggleAllowedPlan(p.id, editalAllowedPlans, setEditalAllowedPlans)} /> {p.name}\n                    </label>\n                ))}"
+);
+
+// Fix 3: newTopicName onChange
+code = code.replace(
+    /onChange=\{e => setNewTopicName\(e\.target\.value placeholder="Novo Tópico"/g,
+    'onChange={e => setNewTopicName(e.target.value)} placeholder="Novo Tópico"'
+);
+
+// Fix 4: selectedSubjectId missing )}
+code = code.replace(
+    /<\/button>\r?\n\s*<\/div>\r?\n\r?\n\s*<\/div>\r?\n\s*\)\)\}/g,
+    '</button>\n                                    </div>\n                                )}\n                            </div>\n                                ))}'
+);
+
+// Fix 5: activeTab === 'editais' missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*\{\/\* SIMULADO ADMIN AREA UPDATED/g,
+    "</div>\n                )}\n                \n                {/* SIMULADO ADMIN AREA UPDATED"
+);
+
+// Fix 6: newSimTitle onChange
+code = code.replace(
+    /onChange=\{e => setNewSimTitle\(e\.target\.value placeholder="Título"/g,
+    'onChange={e => setNewSimTitle(e.target.value)} placeholder="Título"'
+);
+
+// Fix 7: newSimMode onChange
+code = code.replace(
+    /onChange=\{e => setNewSimMode\(e\.target\.value as any className="bg-zinc-800/g,
+    'onChange={e => setNewSimMode(e.target.value as any)} className="bg-zinc-800'
+);
+
+// Fix 8: newSimCover onChange
+code = code.replace(
+    /onChange=\{e => setNewSimCover\(e\.target\.value placeholder="URL Capa"/g,
+    'onChange={e => setNewSimCover(e.target.value)} placeholder="URL Capa"'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 10');

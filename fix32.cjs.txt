@@ -1,0 +1,23 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: 1238-1242 (simOnlineQuestions missing )})
+code = code.replace(
+    /(\s*)\)\)\}\r?\n(\s*)<\/div>\r?\n\r?\n\s*<\/div>\r?\n\s*\)\}/g,
+    '$1))}\n$2</div>\n$2  )}\n$2</div>\n$1  </div>\n$1</div>\n$2)}'
+);
+
+// Fix 2: 1395-1400 (materiais map missing )})
+code = code.replace(
+    /(\s*)\)\)\}\r?\n(\s*)<\/div>\r?\n\r?\n\s*<\/div>\r?\n\s*\)\r?\n\s*\}\)/g,
+    '$1))}\n$2</div>\n$2)}\n$2</div>\n$2)\n$2})'
+);
+
+// Fix 3: 1466-1470 (pendingUsers missing )})
+code = code.replace(
+    /(\s*)<\/div>\r?\n(\s*)\)\)\}\r?\n(\s*)<\/div>\r?\n(\s*)<\/div>\r?\n\r?\n\r?\n\s*\{\/\* Lista de Alunos Ativos/g,
+    '$1</div>\n$2))}\n$3</div>\n$4</div>\n$4)}\n\n\n                        {/* Lista de Alunos Ativos'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 23');

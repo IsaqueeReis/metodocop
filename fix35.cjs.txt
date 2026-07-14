@@ -1,0 +1,37 @@
+const fs = require('fs');
+let lines = fs.readFileSync('App.tsx', 'utf-8').split('\n');
+
+// Remove trailing \r from all lines
+lines = lines.map(l => l.endsWith('\r') ? l.slice(0, -1) : l);
+
+// Let's find the exact block around 1238-1246
+let startIdx = 1237; // line 1238 is index 1237
+while (lines[startIdx].trim() !== '))} {') {
+    if (lines[startIdx].trim() === '))} {') break;
+    if (lines[startIdx].trim() === '))}') break;
+    startIdx++;
+}
+
+// startIdx is around 1237 (line 1238)
+// we replace the next lines up to the PDF answer key builder
+let endIdx = startIdx;
+while (!lines[endIdx].includes('PDF ANSWER KEY BUILDER')) {
+    endIdx++;
+}
+
+// now we want to replace from startIdx to endIdx - 1
+const replacement = [
+    '                                ))} ',
+    '                            </div>',
+    '                        )}',
+    '                    </div>',
+    '                </div>',
+    '            </div>',
+    '        )}',
+    ''
+];
+
+lines.splice(startIdx, endIdx - startIdx, ...replacement);
+
+fs.writeFileSync('App.tsx', lines.join('\n'));
+console.log('Fixed block 26');

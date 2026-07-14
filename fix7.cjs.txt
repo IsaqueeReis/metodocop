@@ -1,0 +1,7 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+code = code.replace(/bg-zinc-700 text-zinc-400'\)\}\`\}>\{idx/g, "bg-zinc-700 text-zinc-400'))}\`}>{idx");
+
+fs.writeFileSync('App.tsx', code);
+console.log('Regex applied!');

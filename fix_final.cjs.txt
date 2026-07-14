@@ -1,0 +1,49 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Restore the sortedByQuestions map
+const target1 = `                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><CheckCircle className="text-green-500"/> Mais Questões Resolvidas</h3>\n                                    </div>`;
+
+const replacement1 = `                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><CheckCircle className="text-green-500"/> Mais Questões Resolvidas</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {sortedByQuestions.map((item, idx) => {
+                                            const count = getFilteredCount(item.answers || [], 'created_at');
+                                            if (count === 0) return null;
+                                            return (
+                                            <div key={item.user.id} className="flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 hover:border-green-500 transition">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={\`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md \${idx === 0 ? 'bg-yellow-500 text-white' : (idx === 1 ? 'bg-zinc-400 text-white' : (idx === 2 ? 'bg-orange-700 text-white' : 'bg-zinc-700 text-zinc-400'))}\`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>
+                                                    <span className="font-bold dark:text-white">{item.user.name}</span>
+                                                </div>
+                                                <span className="font-mono font-bold text-green-500 text-lg">{count}</span>
+                                            </div>
+                                            )
+                                        })}`;
+
+code = code.replace(target1, replacement1);
+
+// 2. Fix the parenthesis in sortedByGoals map (which now is probably line 855-ish again, wait, it's the 3rd Crown)
+// I will just replace the exact text
+const target2 = `'bg-zinc-700 text-zinc-400')}\`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>`;
+const replacement2 = `'bg-zinc-700 text-zinc-400'))}\`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>`;
+code = code.replace(target2, replacement2);
+
+// 3. Fix the missing `</div>` at the end of the ranking section.
+const target3 = `                            </div>
+                        )}
+
+                    </div>
+
+                {activeTab === 'metrics' && (`;
+
+const replacement3 = `                            </div>
+                        )}
+                        </div>
+                    </div>
+
+                {activeTab === 'metrics' && (`;
+code = code.replace(target3, replacement3);
+
+fs.writeFileSync('App.tsx', code);
+console.log('App.tsx fixed');

@@ -1,0 +1,32 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Fix 3667
+content = content.replace(/\{getAchievementIcon\(ach\.icon\n\n<\/div>/g, '{getAchievementIcon(ach.icon, "w-6 h-6")}\n</div>');
+
+// 2. Fix 3679
+content = content.replace(/<\/h4>\n                                    \n<p className="text-\[10px\] text-zinc-400">\{ach\.description\}\n<\/p>\n                                \n<\/div>\n                            \);\n                        \}\n                    \n<\/div>/g, '</h4>\n                                    \n<p className="text-[10px] text-zinc-400">{ach.description}\n</p>\n                                \n</div>\n                            );\n                        })}\n                    \n</div>');
+
+// 3. Fix 3708
+content = content.replace(/src=\{getYoutubeEmbedUrl\(url \n/g, 'src={getYoutubeEmbedUrl(url)}\n');
+
+// 4. Fix 3718
+content = content.replace(/<\/div>\n                                    \n<\/div>\n                                \)\n                                \n<div className="bg-black\/60/g, '</div>\n                                    \n</div>\n                                )}\n                                \n<div className="bg-black/60');
+
+// 5. Fix 3755
+content = content.replace(/hasMentorshipAccess \? <StudentMentorshipPanel studentId=\{user\.id\} revisions=\{revisions\} \/> : <TrilhaVencedor \/>\n\n                \{activeTab === 'banco_questões'/g, 'hasMentorshipAccess ? <StudentMentorshipPanel studentId={user.id} revisions={revisions} /> : <TrilhaVencedor />)}\n\n                {activeTab === \'banco_questões\'');
+
+// 6. Fix 3760
+content = content.replace(/hasMentorshipAccess \? <QuestionBankPanel studentId=\{user\.id\} onUpdateStats=\{updateStats\} \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n\n                \n                \{\/\* RENDER NEW STUDENT TABS \*\/\}/g, 'hasMentorshipAccess ? <QuestionBankPanel studentId={user.id} onUpdateStats={updateStats} /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n\n                \n                {/* RENDER NEW STUDENT TABS */}');
+
+// 7. Fix 3767
+content = content.replace(/hasMentorshipAccess \? <VIPStudentDashboard user=\{user\} activeTab="redacao" \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n\n                \n                \{activeTab === 'cop360'/g, 'hasMentorshipAccess ? <VIPStudentDashboard user={user} activeTab="redacao" /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n\n                \n                {activeTab === \'cop360\'');
+
+// 8. Fix 3773
+content = content.replace(/hasMentorshipAccess \? <Cop360Panel \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n                \n                \{activeTab === 'comunidade'/g, 'hasMentorshipAccess ? <Cop360Panel /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n                \n                {activeTab === \'comunidade\'');
+
+// 9. Fix 3778
+content = content.replace(/hasMentorshipAccess \? <CommunityForum user=\{user\} \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n                \n                \{activeTab === 'suporte'/g, 'hasMentorshipAccess ? <CommunityForum user={user} /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n                \n                {activeTab === \'suporte\'');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 35');

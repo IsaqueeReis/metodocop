@@ -1,0 +1,62 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Line 2068
+content = content.replace(
+    'ENVIAR GABARITO</button>}</div></div>',
+    'ENVIAR GABARITO</button>}</div></div>)}'
+);
+
+// 2. Line 2105
+content = content.replace(
+    'onClick={() => setSimuladoAnswers(p => ({...p, [qNum]: alt.label})',
+    'onClick={() => setSimuladoAnswers(p => ({...p, [qNum]: alt.label}))}'
+);
+
+// 3. Line 2112
+content = content.replace(
+    /return \(\s*<button[\s\S]*?<\/button>\s*\)\s*\}\s*<\/div>\s*<\/div>\s*\)/,
+    match => match.replace('}\n                                         </div>', ')}\n                                         </div>')
+);
+
+// Actually, I'll just use split('\n') since it's safer for line numbers
+let lines = content.split('\n');
+for (let i=0; i<lines.length; i++) {
+    // 2112 missing )} for map
+    if (lines[i].includes('return (') && lines[i+11] && lines[i+11].includes('}')) {
+        // wait, let's just do it directly on line 2112
+        if (i === 2111 && lines[i].trim() === '}') {
+            lines[i] = lines[i].replace('}', ')}');
+        }
+    }
+    
+    // 4. Line 2151 & 2154
+    if (lines[i].includes('onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed ')) {
+        lines[i] = lines[i].replace('onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed ', 'onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} ');
+    }
+    
+    // 2153-2155 missing )}
+    if (lines[i].includes('{isSidebarCollapsed && (')) {
+        if (!lines[i+2].includes(')}')) {
+            lines.splice(i+2, 0, '                    )}');
+        }
+    }
+    
+    // 6. Line 2220 (approx)
+    if (lines[i].trim() === '})(') {
+        lines[i] = lines[i].replace('})(', '})()}');
+    }
+    
+    // 7. Line 2222
+    if (lines[i].includes('onClick={() => setActiveTab(\'perfil\' as any ')) {
+        lines[i] = lines[i].replace('onClick={() => setActiveTab(\'perfil\' as any ', 'onClick={() => setActiveTab(\'perfil\' as any)} ');
+    }
+    
+    // 8. Line 2230
+    if (lines[i].includes('{user.name.charAt(0).toUpperCase(</span>')) {
+        lines[i] = lines[i].replace('{user.name.charAt(0).toUpperCase(</span>', '{user.name.charAt(0).toUpperCase()}</span>');
+    }
+}
+
+fs.writeFileSync('App.tsx', lines.join('\n'));
+console.log('Fixed block 28');

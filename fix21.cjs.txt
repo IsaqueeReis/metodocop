@@ -1,0 +1,48 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: activeEditalId && ( missing )}
+code = code.replace(
+    /<\/div>\r?\n\s*<\/div>\r?\n\r?\n\s*<\/div>\r?\n\s*<\/div>\r?\n\s*\)\}\r?\n\s*\{\/\* SIMULADO/g,
+    "</div>\n                                </div>\n                            )}\n                        </div>\n                    </div>\n                )}\n                \n                {/* SIMULADO"
+);
+
+// Fix 1b: I added an extra )} in fix19 for activeTab === 'editais' which might be wrong. Let's fix it by regexing SIMULADO ADMIN AREA
+code = code.replace(
+    /<\/div>\r?\n\s*\)\}\r?\n\s*\{\/\* SIMULADO ADMIN AREA UPDATED \*\/\}\r?\n\s*\{activeTab === 'simulados' && \(/g,
+    "</div>\n                )}\n                \n                {/* SIMULADO ADMIN AREA UPDATED */}\n                {activeTab === 'simulados' && ("
+);
+// wait, let's just make sure activeTab === 'editais' is closed only once. I will manually check the output later if this is wrong.
+
+// Fix 2: simOnlineQuestions.filter missing )}
+code = code.replace(
+    /onClick=\{\(\) => setSimOnlineQuestions\(simOnlineQuestions\.filter\(\(_, idx\) => idx !== i\) className="text-red-500/g,
+    'onClick={() => setSimOnlineQuestions(simOnlineQuestions.filter((_, idx) => idx !== i))} className="text-red-500'
+);
+
+// Fix 3: newSimMode === 'PDF' && newSimCount > 0 && ( missing )}
+code = code.replace(
+    /<\/div><\/div>\r?\n\r?\n\s*<button onClick=\{handleSaveSimulado\}/g,
+    '</div></div>\n                             )}\n\n                             <button onClick={handleSaveSimulado}'
+);
+
+// Fix 4: activeTab === 'simulados' && ( missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\r?\n\s*\{activeTab === 'materials' && \(/g,
+    "</div>\n                 )}\n\n\n                {activeTab === 'materials' && ("
+);
+
+// Fix 5: newMatTitle onChange missing )}
+code = code.replace(
+    /onChange=\{e => setNewMatTitle\(e\.target\.value placeholder="Ex: Resumo de Crase"/g,
+    'onChange={e => setNewMatTitle(e.target.value)} placeholder="Ex: Resumo de Crase"'
+);
+
+// Fix 6: newMatSubject onChange missing )}
+code = code.replace(
+    /onChange=\{e => setNewMatSubject\(e\.target\.value placeholder="Ex: Português"/g,
+    'onChange={e => setNewMatSubject(e.target.value)} placeholder="Ex: Português"'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 12');

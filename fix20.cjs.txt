@@ -1,0 +1,30 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: newSimInstr onChange
+code = code.replace(
+    /onChange=\{e => setNewSimInstr\(e\.target\.value placeholder="Instruções"/g,
+    'onChange={e => setNewSimInstr(e.target.value)} placeholder="Instruções"'
+);
+
+// Fix 2: newSimMode === 'PDF' && ( inside simulados
+code = code.replace(
+    /<\/div>\r?\n\r?\n\r?\n\s*<div className="mb-4 text-sm text-zinc-400/g,
+    '</div>\n                                 )}\n\n\n                             <div className="mb-4 text-sm text-zinc-400'
+);
+
+// Fix 3: checkboxes in line 1192
+// checked={simAllowedPlans.includes(p.id onChange={() => toggleAllowedPlan(p.id, simAllowedPlans, setSimAllowedPlans />
+code = code.replace(
+    /checked=\{simAllowedPlans\.includes\(p\.id onChange=\{\(\) => toggleAllowedPlan\(p\.id, simAllowedPlans, setSimAllowedPlans \/>/g,
+    'checked={simAllowedPlans.includes(p.id)} onChange={() => toggleAllowedPlan(p.id, simAllowedPlans, setSimAllowedPlans)} />'
+);
+
+// Fix 4: setOnlineQStatement
+code = code.replace(
+    /onChange=\{e => setOnlineQStatement\(e\.target\.value\r?\n\s*placeholder="Enunciado da questão/g,
+    'onChange={e => setOnlineQStatement(e.target.value)}\n                                         placeholder="Enunciado da questão'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 11');

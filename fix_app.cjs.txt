@@ -1,0 +1,80 @@
+const fs = require('fs');
+
+let c = fs.readFileSync('App.tsx', 'utf8');
+
+// 1. Logo Replacement
+c = c.replace(/https:\/\/i\.ibb\.co\/HpqZMgsQ\/image\.png/g, '/METODO COP LOGO.png');
+// In case there are any other logo variants
+c = c.replace(/https:\/\/i\.ibb\.co\/.*\/image\.png/g, '/METODO COP LOGO.png');
+
+// 2. Remove "SANGUE MILICO" / "METODO COP" text next to logo in sidebar
+c = c.replace(/\{!isSidebarCollapsed && <span[^>]*>SANGUE MILICO<\/span>\}/g, '');
+c = c.replace(/\{!isSidebarCollapsed && <span>SANGUE MILICO<\/span>\}/g, '');
+c = c.replace(/<span>SANGUE MILICO<\/span>/g, '');
+
+// 3. Seamless Sidebar / Navbar (Glassmorphism & Police Aesthetic)
+// Sidebar replacements
+c = c.replace(/bg-white dark:bg-\[\#18181b\] border-r border-white\/10 flex flex-col fixed h-full z-40 transition-all duration-300/g, 'bg-black/40 backdrop-blur-2xl flex flex-col fixed h-full z-50 transition-all duration-500 shadow-[20px_0_50px_rgba(0,0,0,0.6)] border-r border-white/5');
+c = c.replace(/bg-white dark:bg-\[\#18181b\] border-r border-zinc-200 dark:border-zinc-800 flex flex-col fixed h-full z-40 transition-all duration-300/g, 'bg-black/40 backdrop-blur-2xl flex flex-col fixed h-full z-50 transition-all duration-500 shadow-[20px_0_50px_rgba(0,0,0,0.6)] border-r border-white/5');
+
+// Sidebar buttons
+c = c.replace(/hover:bg-white\/5 transition-all/g, 'hover:bg-white/10 hover:scale-[1.02] hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300');
+c = c.replace(/bg-red-600 text-white/g, 'bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.5)] scale-[1.02]');
+
+// Main container backgrounds
+c = c.replace(/bg-zinc-50 dark:bg-\[\#09090b\]/g, 'bg-transparent');
+c = c.replace(/bg-zinc-100 dark:bg-\[\#09090b\]/g, 'bg-black/40 backdrop-blur-xl border border-white/5'); // Panels
+c = c.replace(/bg-white dark:bg-\[\#18181b\]/g, 'bg-black/40 backdrop-blur-xl border border-white/5'); // Cards
+
+// 4. Inject Dynamic Orbs into App Root
+const appRootRegex = /<div className="bg-zinc-50 dark:bg-\[\#09090b\] min-h-screen text-zinc-900 dark:text-zinc-100 font-sans flex transition-colors">/g;
+if (appRootRegex.test(c)) {
+    c = c.replace(appRootRegex, `<div className="bg-[#050505] min-h-screen text-white font-sans flex transition-colors relative overflow-hidden">
+      {/* Background Dinâmico Global */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 -left-[20%] w-[800px] h-[800px] bg-red-600/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-0 -right-[20%] w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" style={{ animationDuration: '5s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-zinc-800/30 rounded-full blur-[150px]"></div>
+      </div>
+      <div className="relative z-10 flex w-full h-full">`);
+    // Need to carefully append a closing div, but usually we don't know where the return ends exactly for this component.
+    // Given the risk of syntax errors, we can just replace the opening div. The structure might be balanced if we don't add </div>.
+    // Actually, I added `<div className="relative z-10 flex w-full h-full">` which is an extra opening div! 
+    // I should NOT add it. Let me redefine it to just replace the outer div.
+}
+// Safer injection:
+c = c.replace(/<div className="bg-zinc-50 dark:bg-\[\#09090b\] min-h-screen text-zinc-900 dark:text-zinc-100 font-sans flex transition-colors">/g, 
+`<div className="bg-[#050505] min-h-screen text-white font-sans flex transition-colors relative overflow-x-hidden">
+      {/* Background Dinâmico Global */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 -left-[20%] w-[800px] h-[800px] bg-red-600/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-0 -right-[20%] w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" style={{ animationDuration: '5s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-zinc-800/30 rounded-full blur-[150px]"></div>
+      </div>
+      <div className="relative z-10 flex w-full h-full">`);
+
+// Close the injected wrapper in StudentDashboard
+c = c.replace(/<\/div>\s*<\/div>\s*<\/div>\s*\);/g, '</div></div></div></div>);');
+
+// 5. Replace "Loading..." text with Glitch Logo
+const loadingScreen = `
+<div className="min-h-screen flex flex-col items-center justify-center bg-[#050505] relative overflow-hidden">
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600/20 rounded-full blur-[150px] animate-pulse"></div>
+    </div>
+    <div className="relative z-10 flex flex-col items-center">
+        <img src="/METODO COP LOGO.png" alt="Carregando" className="w-32 h-auto animate-pulse filter drop-shadow-[0_0_20px_rgba(220,38,38,0.8)] mix-blend-screen" />
+        <div className="mt-8 text-red-500 font-bold tracking-[0.5em] text-sm uppercase animate-bounce" style={{ fontFamily: "'Anton', sans-serif" }}>Inicializando Sistema...</div>
+    </div>
+</div>
+`;
+c = c.replace(/<div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white">Carregando...<\/div>/g, loadingScreen);
+c = c.replace(/<div className="min-h-screen flex items-center justify-center text-white bg-black">Carregando...<\/div>/g, loadingScreen);
+c = c.replace(/<div>Carregando...<\/div>/g, loadingScreen);
+
+
+// Width Fix for main container
+c = c.replace(/max-w-7xl mx-auto/g, 'w-full max-w-[1800px] mx-auto px-4');
+c = c.replace(/max-w-5xl mx-auto/g, 'w-full max-w-[1800px] mx-auto px-4');
+
+fs.writeFileSync('App.tsx', c);

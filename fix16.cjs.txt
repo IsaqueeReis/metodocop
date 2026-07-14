@@ -1,0 +1,48 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: activeTab === 'ranking' missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*\{activeTab === 'metrics' && \(/,
+    "</div>\n                )}\n\n                {activeTab === 'metrics' && ("
+);
+
+// Fix 2: activeTab === 'metrics' missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*\{activeTab === 'mentoria' && <AdminMentorshipPanel/,
+    "</div>\n                )}\n\n                {activeTab === 'mentoria' && <AdminMentorshipPanel"
+);
+
+// Fix 3: activeUsers.map missing )
+code = code.replace(
+    /<\/div>\r?\n\s*\)\r?\n\s*\{activeUsers\.length === 0/g,
+    "</div>\n                                ))}\n                                {activeUsers.length === 0"
+);
+
+// Fix 4: productFolders.map missing ) (line 916)
+code = code.replace(
+    /<\/div>\r?\n\s*\)\r?\n\s*<\/div>/g,
+    "</div>\n                                ))}\n                            </div>"
+);
+
+// Fix 5: products.map missing )} before </div> (Line 939)
+// It is <button onClick={...}>Excluir</button></div>
+code = code.replace(
+    />Excluir<\/button><\/div>\r?\n\s*<\/div>/g,
+    ">Excluir</button></div>)}\n                        </div>"
+);
+
+// Fix 6: activeTab === 'produtos' missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*\{activeTab === 'cupons' && \(/,
+    "</div>\n                )}\n\n                {activeTab === 'cupons' && ("
+);
+
+// Fix 7: productFolders.map in the select missing )
+code = code.replace(
+    /\{productFolders\.map\(f => <option key=\{f\.id\} value=\{f\.id\}>\{f\.name\}<\/option>\r?\n\s*<\/select>/,
+    "{productFolders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}\n                                </select>"
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 7');

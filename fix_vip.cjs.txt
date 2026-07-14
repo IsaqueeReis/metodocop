@@ -1,0 +1,29 @@
+const fs = require('fs');
+let c = fs.readFileSync('mentoria-individual/VIPStudentDashboard.tsx', 'utf8');
+
+c = c.replace(/{activeTab === 'missoes' && \(\s*<div className="space-y-6 animate-fade-in">\s*<h2 className="text-3xl font-black font-heading tracking-tight uppercase dark:text-white flex items-center gap-3">/g, 
+`{activeTab === 'missoes' && (
+                <div className="space-y-6 relative z-10 animate-fade-in px-4">
+                    <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-zinc-700 tracking-tight uppercase flex items-center gap-3" style={{ fontFamily: "'Anton', sans-serif" }}>`);
+
+c = c.replace(/{activeTab === 'cop360' && \(\s*<div className="space-y-6 animate-fade-in">\s*<h2 className="text-3xl font-black font-heading tracking-tight uppercase dark:text-white flex items-center gap-3">/g, 
+`{activeTab === 'cop360' && (
+                <div className="space-y-6 relative z-10 animate-fade-in px-4">
+                    <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-zinc-700 tracking-tight uppercase flex items-center gap-3" style={{ fontFamily: "'Anton', sans-serif" }}>`);
+
+c = c.replace(/className=\{`bg-black\/60 backdrop-blur-md border p-6 rounded-xl transition shadow-2xl \$\{isCompleted \? 'border-green-900\/50 opacity-70' : 'border-red-900\/50'\}`\}/g, 
+'className={`bg-black/40 backdrop-blur-xl border p-6 rounded-2xl transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:-translate-y-1 group relative overflow-hidden ${isCompleted ? \\'border-green-900/50 opacity-70\\' : \\'border-red-900/50\\'}`}');
+
+c = c.replace(/className="col-span-2 text-center py-12 bg-black\/60 backdrop-blur-md border border-zinc-800\/50 rounded-xl shadow-2xl"/g, 
+'className="col-span-2 text-center py-12 bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.5)]"');
+
+c = c.replace(/className="text-center py-12 bg-black\/60 backdrop-blur-md border border-zinc-800\/50 rounded-xl shadow-2xl"/g, 
+'className="text-center py-12 bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.5)]"');
+
+c = c.replace(/className="bg-black\/60 backdrop-blur-md border border-yellow-900\/50 p-6 rounded-xl shadow-2xl relative overflow-hidden"/g, 
+'className="bg-black/40 backdrop-blur-xl border border-yellow-900/50 p-6 rounded-2xl shadow-[0_0_20px_rgba(234,179,8,0.1)] relative overflow-hidden"');
+
+c = c.replace(/className="bg-black\/60 backdrop-blur-md border border-zinc-800\/50 p-2 rounded-xl shadow-2xl h-\[600px\] flex flex-col"/g, 
+'className="bg-black/40 backdrop-blur-xl border border-white/5 p-2 rounded-2xl shadow-[0_0_20px_rgba(0,0,0,0.5)] h-[600px] flex flex-col"');
+
+fs.writeFileSync('mentoria-individual/VIPStudentDashboard.tsx', c);

@@ -1,0 +1,42 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: Mais Metas Cumpridas missing ) and })}
+const target1 = `                                                <span className="font-mono font-bold text-red-500 text-lg">{count}</span>
+                                            </div>
+
+                                        {sortedByGoals.filter`;
+const replacement1 = `                                                <span className="font-mono font-bold text-red-500 text-lg">{count}</span>
+                                            </div>
+                                            )
+                                        })}
+                                        {sortedByGoals.filter`;
+
+// Fix 2: onClick setViewingStudentId
+const target2 = `onClick={() => setViewingStudentId(u.id>
+                                        <div className="flex items-center gap-3">`;
+const replacement2 = `onClick={() => setViewingStudentId(u.id)}>
+                                        <div className="flex items-center gap-3">`;
+
+// Fix 3: u.name.charAt(0
+const target3 = `text-white font-bold group-hover:bg-red-600 transition">{u.name.charAt(0</div>`;
+const replacement3 = `text-white font-bold group-hover:bg-red-600 transition">{u.name.charAt(0)}</div>`;
+
+// Fix 4: map closure )
+const target4 = `                                        <button className="text-zinc-500 group-hover:text-white"><Eye size={18}/></button>
+                                    </div>
+                                )
+                                {activeUsers.length === 0`;
+const replacement4 = `                                        <button className="text-zinc-500 group-hover:text-white"><Eye size={18}/></button>
+                                    </div>
+                                ))}
+                                {activeUsers.length === 0`;
+
+
+code = code.replace(target1, replacement1);
+code = code.replace(target2, replacement2);
+code = code.replace(target3, replacement3);
+code = code.replace(target4, replacement4);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed syntax errors in ranking tab!');

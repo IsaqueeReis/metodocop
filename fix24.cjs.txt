@@ -1,0 +1,29 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: newMatCategory === 'LEI_SECA' ? (...) : (...) missing )}
+code = code.replace(
+    /<\/div>\r?\n\s*<div>\r?\n\s*<label className="text-xs font-bold text-zinc-500 uppercase flex items-center gap-1"><ListIcon size=\{12\}\/> Link Questões<\/label>\r?\n\s*<input value=\{newMatQuestions\} onChange=\{e => setNewMatQuestions\(e\.target\.value\)\} placeholder="https:\/\/\.\.\." className="w-full mt-1 bg-black\/40 backdrop-blur-sm border border-white\/10 p-2\.5 rounded-lg text-white outline-none focus:border-red-600" \/>\r?\n\s*<\/div>\r?\n\s*<\/>\r?\n\s*\r?\n\s*<\/div>/g,
+    '</div>\n                                        <div>\n                                            <label className="text-xs font-bold text-zinc-500 uppercase flex items-center gap-1"><ListIcon size={12}/> Link Questões</label>\n                                            <input value={newMatQuestions} onChange={e => setNewMatQuestions(e.target.value)} placeholder="https://..." className="w-full mt-1 bg-black/40 backdrop-blur-sm border border-white/10 p-2.5 rounded-lg text-white outline-none focus:border-red-600" />\n                                        </div>\n                                    </>\n                                )}\n\n                            </div>'
+);
+
+// Fix 2: matAllowedPlans.includes missing )}
+code = code.replace(
+    /checked=\{matAllowedPlans\.includes\(p\.id onChange=\{\(\) => toggleAllowedPlan\(p\.id, matAllowedPlans, setMatAllowedPlans\)\} className="hidden" \/>/g,
+    'checked={matAllowedPlans.includes(p.id)} onChange={() => toggleAllowedPlan(p.id, matAllowedPlans, setMatAllowedPlans)} className="hidden" />'
+);
+
+// Fix 3: toggleSubjectExpand missing )}
+code = code.replace(
+    /onClick=\{\(\) => toggleSubjectExpand\(subject\r?\n\s*className="p-4 bg-black\/40 backdrop-blur-sm/g,
+    'onClick={() => toggleSubjectExpand(subject)}\n                                            className="p-4 bg-black/40 backdrop-blur-sm'
+);
+
+// Fix 4: getSubjectIcon missing )}
+code = code.replace(
+    /\{getSubjectIcon\(subject, "text-zinc-500" \{subject\}/g,
+    '{getSubjectIcon(subject, "text-zinc-500")} {subject}'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 15');

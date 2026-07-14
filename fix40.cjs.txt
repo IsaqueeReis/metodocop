@@ -1,0 +1,20 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Fix {bestResult && (
+content = content.replace(/\{bestResult\.score\.toFixed\(1\)\}\n<\/span>\n<\/div>/g, '{bestResult.score.toFixed(1)}\n</span>\n</div>)}');
+
+// 2. Fix toggleEditalTopic
+content = content.replace(/toggleEditalTopic\(topic\.id className=/g, 'toggleEditalTopic(topic.id)} className=');
+
+// 3. Fix getSubjectIcon
+content = content.replace(/getSubjectIcon\(subj, "text-zinc-400 group-hover:text-white transition-colors duration-300", 40\n<\/div>/g, 'getSubjectIcon(subj, "text-zinc-400 group-hover:text-white transition-colors duration-300", 40)}\n</div>');
+
+// 4. Fix LEI_SECA length
+content = content.replace(/<\/div>\)\{materials\.filter/g, '</div>))}{materials.filter');
+
+// 5. Fix setViewState('SUBJECTS'
+content = content.replace(/setViewState\('SUBJECTS' className=/g, "setViewState('SUBJECTS')} className=");
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 31');

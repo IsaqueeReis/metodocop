@@ -1,0 +1,30 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: activeTab === 'cupons' missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\r?\n\s*\{\/\* \.\.\. Plans Tab \.\.\. \*\/\}/g,
+    "</div>\n                )}\n\n\n                {/* ... Plans Tab ... */}"
+);
+
+// Fix 2: newPlanName onChange
+code = code.replace(
+    /onChange=\{e => setNewPlanName\(e\.target\.value className="flex-1 bg-black\/40/g,
+    'onChange={e => setNewPlanName(e.target.value)} className="flex-1 bg-black/40'
+);
+
+// Fix 3: newPlanDesc onChange
+code = code.replace(
+    /onChange=\{e => setNewPlanDesc\(e\.target\.value className="flex-\[2\] bg-black\/40/g,
+    'onChange={e => setNewPlanDesc(e.target.value)} className="flex-[2] bg-black/40'
+);
+
+// Fix 4: checked={newPlanAllowedTabs.includes(tab.id
+code = code.replace(
+    /checked=\{newPlanAllowedTabs\.includes\(tab\.id\s*\r?\n\s*onChange/g,
+    "checked={newPlanAllowedTabs.includes(tab.id)}\n                                                onChange"
+);
+
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 8');

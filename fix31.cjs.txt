@@ -1,0 +1,53 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: 2068 missing )} for maps
+code = code.replace(
+    /<\/button>\);\s*\}<\/div>\);\s*\}<\/div>/g,
+    '</button>); })}</div>); })}</div>'
+);
+
+// Fix 2: 2105 setSimuladoAnswers missing )}
+code = code.replace(
+    /onClick=\{\(\) => setSimuladoAnswers\(p => \(\{\.\.\.p, \[qNum\]: alt\.label\}\)\r?\n\s*className="w-full text-left/g,
+    'onClick={() => setSimuladoAnswers(p => ({...p, [qNum]: alt.label}))}\n                                                        className="w-full text-left'
+);
+
+// Fix 3: 2116 })})( -> })()}
+code = code.replace(
+    /\}\)\}\)\(\r?\n\s*<\/div>/g,
+    '})()}\n                        </div>'
+);
+
+// Fix 4: 2125 missing )}
+code = code.replace(
+    /<\/span>\r?\n\r?\n\s*<\/div>/g,
+    '</span>\n                                  )}\n                             </div>'
+);
+
+// Fix 5: 2127 missing )}
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*<\/div>\r?\n\r?\n\s*<\/div>\r?\n\s*\);/g,
+    '</div>\n                         )}\n                    </div>\n                )}\n            </div>\n        );'
+);
+
+// Fix 6: 2140 setShowPremiumLock missing )}
+code = code.replace(
+    /onClose=\{\(\) => setShowPremiumLock\(null featureName=\{showPremiumLock\} \/>\}/g,
+    'onClose={() => setShowPremiumLock(null)} featureName={showPremiumLock} />}'
+);
+
+// Fix 7: 2142 setMobileMenuOpen missing )}
+code = code.replace(
+    /onClick=\{\(\) => setMobileMenuOpen\(!mobileMenuOpen className="md:hidden fixed/g,
+    'onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden fixed'
+);
+
+// Fix 8: 2143 setMobileMenuOpen false missing )}
+code = code.replace(
+    /onClick=\{\(\) => setMobileMenuOpen\(false><\/div>\}/g,
+    'onClick={() => setMobileMenuOpen(false)}></div>}'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 22');

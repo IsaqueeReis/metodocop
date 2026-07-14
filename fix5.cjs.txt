@@ -1,0 +1,45 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+const marker = '<h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><CheckCircle className="text-green-500"/> Mais Questões Resolvidas</h3>';
+const idxStart = code.indexOf(marker);
+
+if (idxStart !== -1) {
+    // Find the end of the block we want to replace
+    // It should replace everything from idxStart to the next "Mais Metas Cumpridas" minus some characters.
+    const markerEnd = '<h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><Target className="text-red-500"/> Mais Metas Cumpridas</h3>';
+    let idxEnd = code.indexOf(markerEnd);
+    
+    // We want to keep markerStart, and replace the broken `})}` with the full block.
+    // Actually, I can just replace the text exactly.
+    // Let's find `})}` after idxStart
+    const searchStr = '})}';
+    const idxClose = code.indexOf(searchStr, idxStart);
+    
+    if (idxClose !== -1 && idxClose < idxEnd) {
+        const replacement = `Mais Questões Resolvidas</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {sortedByQuestions.map((item, idx) => {
+                                            const count = getFilteredCount(item.answers || [], 'created_at');
+                                            if (count === 0) return null;
+                                            return (
+                                            <div key={item.user.id} className="flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 hover:border-green-500 transition">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={\`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md \${idx === 0 ? 'bg-yellow-500 text-white' : (idx === 1 ? 'bg-zinc-400 text-white' : (idx === 2 ? 'bg-orange-700 text-white' : 'bg-zinc-700 text-zinc-400'))}\`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>
+                                                    <span className="font-bold dark:text-white">{item.user.name}</span>
+                                                </div>
+                                                <span className="font-mono font-bold text-green-500 text-lg">{count}</span>
+                                            </div>
+                                            )
+                                        })}`;
+        
+        // We replace from idxStart (where 'Mais Questões Resolvidas</h3>' starts) up to idxClose + 3
+        const before = code.substring(0, idxStart + marker.length - 'Mais Questões Resolvidas</h3>'.length);
+        const after = code.substring(idxClose + 3);
+        
+        code = before + replacement + after;
+        fs.writeFileSync('App.tsx', code);
+        console.log('Fixed block manually!');
+    }
+}

@@ -1,0 +1,42 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: newSimMode === 'PDF' && ( line 1175
+code = code.replace(
+    /onChange=\{e => setNewSimPdf\(e\.target\.value\)\} placeholder="URL PDF" className="bg-zinc-800 border border-white\/10 p-2 rounded text-white" \/>\r?\n\r?\n\s*<\/div>/g,
+    'onChange={e => setNewSimPdf(e.target.value)} placeholder="URL PDF" className="bg-zinc-800 border border-white/10 p-2 rounded text-white" />\n                                 )}\n                             </div>'
+);
+
+// Fix 2: newSimMode === 'ONLINE' && simOnlineQuestions.length > 0 && (
+code = code.replace(
+    /<\/div>\r?\n\r?\n\s*<\/div>\r?\n\r?\n\r?\n\s*\{\/\* PDF ANSWER KEY BUILDER/g,
+    "</div>\n\n                                  </div>\n                              )}\n\n\n                             {/* PDF ANSWER KEY BUILDER"
+);
+
+// Fix 3: newMatPdf && (
+code = code.replace(
+    /title="Preview Lei" \/>\r?\n\s*<\/div>\r?\n\r?\n\s*<\/div>/g,
+    'title="Preview Lei" />\n                                            </div>\n                                        )}\n                                    </div>'
+);
+
+// Fix 4: newMatPdf (the second one)
+code = code.replace(
+    /onChange=\{e => setNewMatPdf\(e\.target\.value placeholder="https:\/\/\.\.\."/g,
+    'onChange={e => setNewMatPdf(e.target.value)} placeholder="https://..."'
+);
+
+// Fix 5: newMatVideo
+code = code.replace(
+    /onChange=\{e => setNewMatVideo\(e\.target\.value placeholder="https:\/\/\.\.\."/g,
+    'onChange={e => setNewMatVideo(e.target.value)} placeholder="https://..."'
+);
+
+// Fix 6: newMatQuestions
+code = code.replace(
+    /onChange=\{e => setNewMatQuestions\(e\.target\.value placeholder="https:\/\/\.\.\."/g,
+    'onChange={e => setNewMatQuestions(e.target.value)} placeholder="https://..."'
+);
+
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 14');

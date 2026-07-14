@@ -1,0 +1,9 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+const regex = /\}\)\}\)\r?\n\s*<\/div>\r?\n\s*\)\}\r?\n\s*<\/div>\r?\n\r?\n\s*<\/div>\r?\n\r?\n\s*<\/div>\r?\n\s*\)\}/g;
+
+code = code.replace(regex, '}))}\n                            </div>\n                        )}\n                    </div>\n                </div>\n            </div>\n        )}');
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 25');

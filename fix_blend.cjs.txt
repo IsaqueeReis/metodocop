@@ -1,0 +1,24 @@
+const fs = require('fs');
+const path = require('path');
+
+function processDir(dir) {
+    fs.readdirSync(dir).forEach(file => {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+            processDir(fullPath);
+        } else if (fullPath.endsWith('.tsx') || fullPath.endsWith('.ts')) {
+            let c = fs.readFileSync(fullPath, 'utf8');
+            const original = c;
+            c = c.replace(/style=\{\{\s*mixBlendMode:\s*'multiply'\s*\}\}/g, '');
+            c = c.replace(/style=\{\{\s*mixBlendMode:\s*"multiply"\s*\}\}/g, '');
+            if (c !== original) {
+                fs.writeFileSync(fullPath, c);
+                console.log(`Fixed blend mode in ${fullPath}`);
+            }
+        }
+    });
+}
+
+processDir('mentoria-individual');
+processDir('src');
+processDir('question-bank');

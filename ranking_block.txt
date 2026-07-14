@@ -1,0 +1,95 @@
+                {/* ... (rest of admin dashboard content) ... */}
+                {activeTab === 'ranking' && (
+                    <div className="space-y-8 animate-fade-in">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-2xl font-bold dark:text-white flex items-center gap-2"><Trophy className="text-yellow-500"/> Hall da Fama</h2>
+                            <button onClick={loadRankings} className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 p-2 rounded-lg transition" title="Atualizar Ranking"><RefreshCw size={18} className={rankingLoading ? "animate-spin" : ""} /></button>
+                        </div>
+                        {rankingLoading ? <p className="text-zinc-500 text-center py-10">Carregando dados da tropa...</p> : (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div className="bg-black/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-lg lg:col-span-2">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><Clock className="text-blue-500"/> Maior Dedicação (Horas)</h3>
+                                        <select value={rankingPeriod} onChange={(e) => setRankingPeriod(e.target.value as any)} className="bg-black/40 backdrop-blur-sm border border-white/10 rounded p-1 text-xs font-bold outline-none text-zinc-300">
+                                            <option value="DAILY">Hoje</option>
+                                            <option value="WEEKLY">Semana</option>
+                                            <option value="MONTHLY">Mês</option>
+                                            <option value="ANNUAL">Ano</option>
+                                        </select>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {sortedByHours.map((item, idx) => {
+                                            const totalHours = getFilteredSeconds(item.sessions) / 3600;
+                                            return (
+                                            <div key={item.user.id} className="flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 hover:border-blue-500 transition">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-md ${idx === 0 ? 'bg-yellow-500 text-white' : (idx === 1 ? 'bg-zinc-400 text-white' : (idx === 2 ? 'bg-orange-700 text-white' : 'bg-zinc-700 text-zinc-400'))}`}>{idx === 0 ? <Crown size={20}/> : idx + 1}</div>
+                                                    <div>
+                                                        <span className="font-bold dark:text-white block">{item.user.name}</span>
+                                                        <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">{getRankByHours(item.user.achievements.length > 0 ? totalHours : 0)}</span>
+                                                    </div>
+                                                </div>
+                                                <span className="font-mono font-bold text-blue-500 text-lg">{formatTime(getFilteredSeconds(item.sessions))}</span>
+                                            </div>
+                                            )
+                                        })}
+                                        {sortedByHours.length === 0 && <p className="col-span-2 text-zinc-500 text-xs italic text-center py-4">Sem dados para este período.</p>}
+                                    </div>
+                                </div>
+
+                                {/* Mais Questões Resolvidas */}
+                                <div className="bg-black/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-lg">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><CheckCircle className="text-green-500"/> Mais Questões Resolvidas</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {sortedByQuestions.map((item, idx) => {
+                                            const count = getFilteredCount(item.answers || [], 'created_at');
+                                            if (count === 0) return null;
+                                            return (
+                                            <div key={item.user.id} className="flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 hover:border-green-500 transition">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md ${idx === 0 ? 'bg-yellow-500 text-white' : (idx === 1 ? 'bg-zinc-400 text-white' : (idx === 2 ? 'bg-orange-700 text-white' : 'bg-zinc-700 text-zinc-400'))}`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>
+                                                    <span className="font-bold dark:text-white">{item.user.name}</span>
+                                                </div>
+                                                <span className="font-mono font-bold text-green-500 text-lg">{count}</span>
+                                            </div>
+                                            )
+                                        })}
+                                        {sortedByQuestions.filter(item => getFilteredCount(item.answers || [], 'created_at') > 0).length === 0 && <p className="text-zinc-500 text-xs italic text-center py-4">Sem dados para este período.</p>}
+                                    </div>
+                                </div>
+
+                                {/* Mais Metas Cumpridas */}
+                                <div className="bg-black/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-lg">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><Target className="text-red-500"/> Mais Metas Cumpridas</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {sortedByGoals.map((item, idx) => {
+                                            const count = getFilteredCount((item.dailyGoals || []).filter((g: any) => g.completed), 'date');
+                                            if (count === 0) return null;
+                                            return (
+                                            <div key={item.user.id} className="flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 hover:border-red-500 transition">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md ${idx === 0 ? 'bg-yellow-500 text-white' : (idx === 1 ? 'bg-zinc-400 text-white' : (idx === 2 ? 'bg-orange-700 text-white' : 'bg-zinc-700 text-zinc-400')`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>
+                                                    <span className="font-bold dark:text-white">{item.user.name}</span>
+                                                </div>
+                                                <span className="font-mono font-bold text-red-500 text-lg">{count}</span>
+                                            </div>
+
+                                        {sortedByGoals.filter(item => getFilteredCount((item.dailyGoals || []).filter((g: any) => g.completed), 'date') > 0).length === 0 && <p className="text-zinc-500 text-xs italic text-center py-4">Sem dados para este período.</p>}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+
+                {activeTab === 'metrics' && (
+                    <div className="space-y-6">
+                         <div className="bg-black/60 backdrop-blur-md p-6 rounded-xl border border-white/10">
+                             <h3 className="text-xl font-bold dark:text-white mb-4 flex items-center gap-2"><Activity className="text-red-600"/> Inteligência da Tropa (Métricas Individuais)</h3>
+                             <p className="text-zinc-500 text-sm mb-6">Selecione um combatente para visualizar seu relatório de desempenho detalhado (Modo Observador).</p>
+                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {activeUsers.map(u => (

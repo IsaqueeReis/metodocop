@@ -1,0 +1,30 @@
+const fs = require('fs');
+let lines = fs.readFileSync('App.tsx', 'utf-8').split('\n');
+
+// Find line 1240: "                        )}"
+// And remove the extra </div>s
+let idx = 1200;
+while (idx < lines.length) {
+    if (lines[idx].includes('))} ') && lines[idx+1].includes('</div>')) {
+        // We found:
+        // 1238: ))} 
+        // 1239: </div>
+        // 1240: )}
+        // 1241: </div>
+        // 1242: </div>
+        // 1243: </div>
+        // 1244: )}
+        if (lines[idx+2].includes(')}') && lines[idx+3].includes('</div>') && lines[idx+4].includes('</div>')) {
+            // Replace with just one </div> and )}
+            lines.splice(idx+3, 4, 
+                '                            </div>',
+                '                        )}'
+            );
+            break;
+        }
+    }
+    idx++;
+}
+
+fs.writeFileSync('App.tsx', lines.join('\n'));
+console.log('Fixed block 27');

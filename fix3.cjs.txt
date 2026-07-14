@@ -1,0 +1,31 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+const target = `                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><CheckCircle className="text-green-500"/> Mais Questões Resolvidas</h3>
+                                        })}`;
+
+const replacement = `                                        <h3 className="text-lg font-bold dark:text-white flex items-center gap-2"><CheckCircle className="text-green-500"/> Mais Questões Resolvidas</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {sortedByQuestions.map((item, idx) => {
+                                            const count = getFilteredCount(item.answers || [], 'created_at');
+                                            if (count === 0) return null;
+                                            return (
+                                            <div key={item.user.id} className="flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 hover:border-green-500 transition">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={\`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md \${idx === 0 ? 'bg-yellow-500 text-white' : (idx === 1 ? 'bg-zinc-400 text-white' : (idx === 2 ? 'bg-orange-700 text-white' : 'bg-zinc-700 text-zinc-400'))}\`}>{idx === 0 ? <Crown size={16}/> : idx + 1}</div>
+                                                    <span className="font-bold dark:text-white">{item.user.name}</span>
+                                                </div>
+                                                <span className="font-mono font-bold text-green-500 text-lg">{count}</span>
+                                            </div>
+                                            )
+                                        })}`;
+
+if (code.includes(target)) {
+    code = code.replace(target, replacement);
+    fs.writeFileSync('App.tsx', code);
+    console.log('Success replacing block!');
+} else {
+    console.log('Target not found! Searching for alternative:');
+    console.log(code.substring(code.indexOf('Mais Questões Resolvidas'), code.indexOf('Mais Questões Resolvidas') + 200));
+}

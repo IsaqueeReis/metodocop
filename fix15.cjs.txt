@@ -1,0 +1,34 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: missing closing for classname in target goals (line 75 of block)
+code = code.replace(
+    /bg-zinc-700 text-zinc-400'\)`\}/g,
+    "bg-zinc-700 text-zinc-400'))}`}"
+);
+
+// Fix 2: missing map closing in target goals
+code = code.replace(
+    /<span className="font-mono font-bold text-red-500 text-lg">\{count\}<\/span>\r?\n\s*<\/div>\r?\n\r?\n\s*\{sortedByGoals\.filter/g,
+    '<span className="font-mono font-bold text-red-500 text-lg">{count}</span>\n                                            </div>\n                                            )\n                                        })}\n                                        {sortedByGoals.filter'
+);
+
+// Fix 3: setViewingStudentId missing closing )
+code = code.replace(
+    /onClick=\{\(\) => setViewingStudentId\(u\.id>\r?\n\s*<div className="flex items-center gap-3">/g,
+    'onClick={() => setViewingStudentId(u.id)}>\n                                        <div className="flex items-center gap-3">'
+);
+
+// Verify if the replacement happened
+if(code.includes("bg-zinc-700 text-zinc-400'))}`}")) {
+    console.log("Fix 1 applied");
+}
+if(code.includes("})\n                                        {sortedByGoals.filter")) {
+    console.log("Fix 2 applied");
+}
+if(code.includes("onClick={() => setViewingStudentId(u.id)}>")) {
+    console.log("Fix 3 applied");
+}
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 6');

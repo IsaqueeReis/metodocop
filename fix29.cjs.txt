@@ -1,0 +1,17 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: setViewingStudentId missing )}
+code = code.replace(
+    /onClick=\{\(\) => setViewingStudentId\(u\.id\r?\n\s*className="flex-1 md:flex-none bg-blue-600/g,
+    'onClick={() => setViewingStudentId(u.id)}\n                                                    className="flex-1 md:flex-none bg-blue-600'
+);
+
+// Fix 2: handleRejectUser missing )}
+code = code.replace(
+    /onClick=\{\(\) => handleRejectUser\(u\.id \r?\n\s*className="flex-1 md:flex-none bg-red-600/g,
+    'onClick={() => handleRejectUser(u.id)}\n                                                    className="flex-1 md:flex-none bg-red-600'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 20');

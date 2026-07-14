@@ -1,0 +1,29 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: handleMoveMaterial up
+code = code.replace(
+    /onClick=\{\(\) => handleMoveMaterial\(mat, 'up' className=/g,
+    "onClick={() => handleMoveMaterial(mat, 'up')} className="
+);
+
+// Fix 2: handleMoveMaterial down
+code = code.replace(
+    /onClick=\{\(\) => handleMoveMaterial\(mat, 'down' className=/g,
+    "onClick={() => handleMoveMaterial(mat, 'down')} className="
+);
+
+// Fix 3: handleEditMaterial
+code = code.replace(
+    /onClick=\{\(\) => handleEditMaterial\(mat className=/g,
+    "onClick={() => handleEditMaterial(mat)} className="
+);
+
+// Fix 4: handleDeleteMaterial
+code = code.replace(
+    /onClick=\{\(e\) => handleDeleteMaterial\(e, mat\.id className=/g,
+    "onClick={(e) => handleDeleteMaterial(e, mat.id)} className="
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 16');

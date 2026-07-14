@@ -1,0 +1,20 @@
+const fs = require('fs');
+let lines = fs.readFileSync('App.tsx', 'utf-8').split('\n');
+
+// The lines match exactly the output from node -e.
+// 3219 -> 3218 (0-indexed)
+if (lines[3218].includes("</button>) : (")) {
+    lines[3218] = lines[3218].replace("</button>) : (", "</button>) : (<>");
+}
+if (lines[3229].includes("</button>")) {
+    lines[3229] = lines[3229].replace("</button>", "</button></>)");
+}
+if (lines[3480].includes("</button>")) {
+    lines[3480] = lines[3480].replace("</button>", "</button>)}");
+}
+if (lines[3508].trim() === "") {
+    lines[3508] = ")}";
+}
+
+fs.writeFileSync('App.tsx', lines.join('\n'));
+console.log('Fixed block 37 using exact line numbers');

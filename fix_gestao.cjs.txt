@@ -1,0 +1,27 @@
+const fs = require('fs');
+let c = fs.readFileSync('mentoria-individual/GestaoVIPPanel.tsx', 'utf8');
+
+c = c.replace(/bg-zinc-900\/50 p-6 rounded-xl border border-zinc-800/g, 'bg-black/40 backdrop-blur-xl p-6 rounded-2xl border border-white/5 shadow-[0_0_20px_rgba(0,0,0,0.5)]');
+c = c.replace(/bg-zinc-900\/50 p-8 rounded-xl border border-zinc-800/g, 'bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-white/5 shadow-[0_0_20px_rgba(0,0,0,0.5)]');
+c = c.replace(/bg-zinc-950\/50 border border-zinc-800/g, 'bg-black/40 backdrop-blur-md border border-white/5 hover:border-white/20');
+c = c.replace(/bg-zinc-950 border border-zinc-800/g, 'bg-black/40 backdrop-blur-md border border-white/5 hover:border-white/20');
+c = c.replace(/bg-zinc-900 border border-zinc-800/g, 'bg-zinc-900/80 backdrop-blur-md border border-white/10');
+c = c.replace(/bg-\[\#09090b\]/g, 'bg-[#050505]');
+
+// Add dynamic background just after main container
+c = c.replace(/<div className="bg-\[\#050505\] text-zinc-200 p-6 min-h-screen font-sans border border-zinc-900 rounded-xl relative overflow-hidden">/g, 
+`<div className="bg-[#050505] text-white p-6 min-h-screen font-sans rounded-xl relative overflow-hidden">
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 -left-[20%] w-[800px] h-[800px] bg-red-600/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-0 -right-[20%] w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[150px] mix-blend-screen animate-pulse" style={{ animationDuration: '5s' }}></div>
+      </div>
+      <div className="relative z-10 space-y-6">`);
+      
+// Fix closing tags if we added a wrapper, but it's easier to just append the wrapper end to the very end
+// We will replace the last `</div>` with `</div></div>`
+const lastDivIndex = c.lastIndexOf('</div>');
+if (lastDivIndex !== -1) {
+    c = c.substring(0, lastDivIndex) + '</div></div>' + c.substring(lastDivIndex + 6);
+}
+
+fs.writeFileSync('mentoria-individual/GestaoVIPPanel.tsx', c);

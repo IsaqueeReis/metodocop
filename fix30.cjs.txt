@@ -1,0 +1,35 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Fix 1: onCancel dialog
+code = code.replace(
+    /onCancel=\{\(\) => setDialog\(\{ \.\.\.dialog, isOpen: false \} \r?\n\s*inputPlaceholder=\{dialog\.inputPlaceholder\}/g,
+    'onCancel={() => setDialog({ ...dialog, isOpen: false })}\n                inputPlaceholder={dialog.inputPlaceholder}'
+);
+
+// Fix 2: onClose edital modal
+code = code.replace(
+    /onClose=\{\(\) => setIsEditalAIModalOpen\(false\r?\n\s*onSuccess=\{handleAIEditalSuccess\}/g,
+    'onClose={() => setIsEditalAIModalOpen(false)}\n                onSuccess={handleAIEditalSuccess}'
+);
+
+// Fix 3: setSimuladoAnswers
+code = code.replace(
+    /onClick=\{\(\) => !reviewMode && setSimuladoAnswers\(p => \(\{\.\.\.p, \[qNum\]: label\}\) className=/g,
+    'onClick={() => !reviewMode && setSimuladoAnswers(p => ({...p, [qNum]: label}))} className='
+);
+
+// Fix 4: setCurrentOnlineQIndex prev - 1
+code = code.replace(
+    /onClick=\{\(\) => setCurrentOnlineQIndex\(prev => prev - 1 className="bg-zinc-800 text-white/g,
+    'onClick={() => setCurrentOnlineQIndex(prev => prev - 1)} className="bg-zinc-800 text-white'
+);
+
+// Fix 5: setCurrentOnlineQIndex prev + 1
+code = code.replace(
+    /onClick=\{\(\) => setCurrentOnlineQIndex\(prev => prev \+ 1 className="bg-zinc-800 text-white/g,
+    'onClick={() => setCurrentOnlineQIndex(prev => prev + 1)} className="bg-zinc-800 text-white'
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 21');

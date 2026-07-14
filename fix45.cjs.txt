@@ -1,0 +1,27 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Fix 3648
+content = content.replace(/onChange=\{e => setObjective\(e\.target\.value className="/g, 'onChange={e => setObjective(e.target.value)} className="');
+
+// 2. Fix 3752 (tutorial)
+content = content.replace(/<\/p>\n                            \n<\/div>\n\n                    \n<\/div>\n\n                \{activeTab === 'trilha'/g, '</p>\n                            \n</div>\n\n                    \n</div>)}\n\n                {activeTab === \'trilha\'');
+
+// 3. Fix 3772 (cop360)
+content = content.replace(/hasMentorshipAccess \? <Cop360Panel \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n\n\n                \{activeTab === 'missoes'/g, 'hasMentorshipAccess ? <Cop360Panel /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n\n\n                {activeTab === \'missoes\'');
+
+// 4. Fix 3778 (missoes)
+content = content.replace(/hasMentorshipAccess \? <VIPStudentDashboard user=\{user\} activeTab="missoes" \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n\n            <\/main>/g, 'hasMentorshipAccess ? <VIPStudentDashboard user={user} activeTab="missoes" /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n\n            </main>');
+
+// 5. Check if there are other unclosed PremiumLocks:
+// 3757 (banco_questões) -> check if it was fixed.
+content = content.replace(/<QuestionBankPanel studentId=\{user\.id\} onUpdateStats=\{updateStats\} \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n\n                \n                \{\/\* RENDER NEW/g, '<QuestionBankPanel studentId={user.id} onUpdateStats={updateStats} /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n\n                \n                {/* RENDER NEW');
+
+// 3764 (redacao)
+content = content.replace(/<VIPStudentDashboard user=\{user\} activeTab="redacao" \/> : \n<div className="relative min-h-screen"><PremiumLock \/>\n<\/div>\n\n                \n                \{activeTab === 'cop360'/g, '<VIPStudentDashboard user={user} activeTab="redacao" /> : \n<div className="relative min-h-screen"><PremiumLock />\n</div>)}\n\n                \n                {activeTab === \'cop360\'');
+
+// 3754 (trilha)
+content = content.replace(/hasMentorshipAccess \? <StudentMentorshipPanel studentId=\{user\.id\} revisions=\{revisions\} \/> : <TrilhaVencedor \/>\n\n                \{activeTab === 'banco_questões'/g, 'hasMentorshipAccess ? <StudentMentorshipPanel studentId={user.id} revisions={revisions} /> : <TrilhaVencedor />)}\n\n                {activeTab === \'banco_questões\'');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 36');

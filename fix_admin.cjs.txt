@@ -1,0 +1,9 @@
+const fs = require('fs');
+let c = fs.readFileSync('mentoria-individual/AdminPanel.tsx', 'utf8');
+
+c = c.replace(/bg-zinc-900\/50 p-8 rounded-xl border border-zinc-800/g, 'bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-white/5 shadow-[0_0_20px_rgba(0,0,0,0.5)]');
+c = c.replace(/bg-zinc-950 border border-zinc-800/g, 'bg-black/40 backdrop-blur-md border border-white/5 hover:border-white/20');
+c = c.replace(/bg-zinc-900 border border-zinc-800/g, 'bg-zinc-900/80 backdrop-blur-md border border-white/10');
+c = c.replace(/bg-\[\#09090b\]/g, 'bg-[#050505]');
+
+fs.writeFileSync('mentoria-individual/AdminPanel.tsx', c);

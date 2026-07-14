@@ -1,0 +1,123 @@
+const fs = require('fs');
+const path = require('path');
+
+function fixEncoding(str) {
+    try {
+        // Double-encoded UTF-8 strings look like ç, ã, á.
+        // We can decode them by reading the string as 'binary' (latin1) and interpreting it as 'utf8'.
+        const buf = Buffer.from(str, 'binary');
+        const decoded = buf.toString('utf8');
+        // If it successfully decodes without producing replacement characters (or if it reduces them),
+        // we return decoded. But wait, if it was NOT double encoded, this might corrupt it.
+        // So let's just do a specific replace for known corrupted patterns if we want to be safe.
+        // Or we can check if the string contains typical double-encoded sequences:
+        if (str.includes('í')) {
+            return decoded;
+        }
+        return str;
+    } catch (e) {
+        return str;
+    }
+}
+
+// More surgical approach: Since the double encoding happens to Portuguese characters, we can just replace them.
+const replacements = {
+    'á': 'á',
+    'â': 'â',
+    'ã': 'ã',
+    'é': 'é',
+    'ê': 'ê',
+    'í': 'í',
+    'ó': 'ó',
+    'ô': 'ô',
+    'õ': 'õ',
+    'ú': 'ú',
+    'ç': 'ç',
+    'í\x81': 'Á',
+    'í\x82': 'Â',
+    'í\x83': 'í',
+    'í\x89': 'É',
+    'í\x8A': 'Ê',
+    'í\x8D': 'Í',
+    'í\x93': 'Ó',
+    'í\x94': 'Ô',
+    'í\x95': 'Õ',
+    'í\x9A': 'Ú',
+    'í\x87': 'Ç',
+    'Ç': 'Ç',
+    'ã': 'ã',
+    'í': 'í',
+    'é': 'é',
+    'ó': 'ó',
+    'ú': 'ú',
+    'â': 'â',
+    'ê': 'ê',
+    'ô': 'ô',
+    'õ': 'õ',
+    'ç': 'ç',
+    'á': 'á',
+    'í': 'í', // specific to how 'í' might get cut off in some logs, but usually it's í (with a soft hyphen or something)
+};
+
+function fixString(str) {
+    // There are some specific weird characters we saw: `Redação` where `ǜ` is \x01DC.
+    // Wait, the safest is to use the Buffer approach for the whole string if it contains "í".
+    let fixed = str;
+    let changed = false;
+    
+    // Check if it has replacement characters caused by the previous save.
+    // If a string was saved as ANSI when it was UTF-8, characters might have been transformed.
+    // Let's replace the typical broken strings from the screenshot:
+    fixed = fixed.replace(/REDAAA[^\w]?O/g, 'REDAÇíO');
+    fixed = fixed.replace(/REDAÇíO/g, 'REDAÇíO');
+    fixed = fixed.replace(/TÁTICA/g, 'TÁTICA');
+    fixed = fixed.replace(/TÁTICA/g, 'TÁTICA');
+    fixed = fixed.replace(/Revisão/g, 'Revisão');
+    fixed = fixed.replace(/Estratégica/g, 'Estratégica');
+    fixed = fixed.replace(/Redação/g, 'Redação');
+    fixed = fixed.replace(/Redação/g, 'Redação');
+    fixed = fixed.replace(/Revisão/g, 'Revisão');
+    fixed = fixed.replace(/diárias/g, 'diárias');
+    fixed = fixed.replace(/Materiais/g, 'Materiais');
+    fixed = fixed.replace(/Matéria/g, 'Matéria');
+    fixed = fixed.replace(/Método/g, 'Método');
+    fixed = fixed.replace(/Questões/g, 'Questões');
+    fixed = fixed.replace(/Questões/g, 'Questões'); // Just in case
+    
+    for (const [bad, good] of Object.entries(replacements)) {
+        if (fixed.includes(bad)) {
+            fixed = fixed.split(bad).join(good);
+        }
+    }
+    
+    return fixed;
+}
+
+function processDir(dir) {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        if (file === 'node_modules' || file === '.git' || file === '.gemini') continue;
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+            processDir(fullPath);
+        } else if (file.endsWith('.tsx') || file.endsWith('.ts') || file.endsWith('.css') || file.endsWith('.html') || file.endsWith('.cjs') || file.endsWith('.js')) {
+            let content = fs.readFileSync(fullPath, 'utf8');
+            let fixedContent = fixString(content);
+            // Additionally fix the replace regexes in StudentPanel.tsx
+            if (file === 'StudentPanel.tsx' || file === 'VIPStudentDashboard.tsx') {
+                fixedContent = fixedContent.replace(/\.replace\(\/Ç\/g, "Ç"\)\.replace\(\/ã\/g, "ã"\)\.replace\(\/í\/g, "í"\)\.replace\(\/á\/g, "á"\)\.replace\(\/é\/g, "é"\)\.replace\(\/í\/g, "Í"\)\.replace\(\/ó\/g, "ó"\)\.replace\(\/ú\/g, "ú"\)\.replace\(\/â\/g, "â"\)\.replace\(\/ê\/g, "ê"\)\.replace\(\/ô\/g, "ô"\)\.replace\(\/õ\/g, "õ"\)\.replace\(\/ç\/g, "ç"\)/g, '');
+                // Replace any other weird things:
+                fixedContent = fixedContent.replace(/Redao/g, 'Redação');
+                fixedContent = fixedContent.replace(/Redao/g, 'Redação');
+            }
+            if (content !== fixedContent) {
+                fs.writeFileSync(fullPath, fixedContent, 'utf8');
+                console.log(`Fixed encoding in ${fullPath}`);
+            }
+        }
+    }
+}
+
+processDir(__dirname);
+console.log('Encoding fix complete.');

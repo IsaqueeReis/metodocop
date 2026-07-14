@@ -1,0 +1,14 @@
+const fs = require('fs');
+let content = fs.readFileSync('App.tsx', 'utf-8');
+
+// 1. Fix 3597
+content = content.replace(/onClose=\{.*setViewState\('CONTENT_LIST' \n/g, "onClose={() => setViewState('CONTENT_LIST')}\n");
+
+// 2. Fix 3604
+content = content.replace(/setViewState\('CONTENT_LIST' className=/g, "setViewState('CONTENT_LIST')} className=");
+
+// 3. Fix 3616
+content = content.replace(/<\/div>\n                                \)\)\}\n                            \n<\/div>\}/g, '</div>\n                                )}\n                            \n</div>}');
+
+fs.writeFileSync('App.tsx', content);
+console.log('Fixed block 34');

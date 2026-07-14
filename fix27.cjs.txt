@@ -1,0 +1,27 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+// Reverse fix 26's overzealous map replace which changed })})}) to })})}
+// Actually, I can just replace `})})}` with `})}` for the stats!
+code = code.replace(/\}\)\}\)\}/g, '})}');
+
+// Fix onChange pending user plans
+code = code.replace(
+    /onChange=\{\(e\) => setPendingUserPlans\(\{\.\.\.pendingUserPlans, \[u\.id\]: e\.target\.value\}\r?\n\s*className="bg-zinc-800/g,
+    'onChange={(e) => setPendingUserPlans({...pendingUserPlans, [u.id]: e.target.value})}\n                                                    className="bg-zinc-800'
+);
+
+// Fix handleApproveUser
+code = code.replace(
+    /onClick=\{\(\) => handleApproveUser\(u\.id, pendingUserPlans\[u\.id\] className=/g,
+    'onClick={() => handleApproveUser(u.id, pendingUserPlans[u.id])} className='
+);
+
+// Fix handleRejectUser
+code = code.replace(
+    /onClick=\{\(\) => handleRejectUser\(u\.id className=/g,
+    'onClick={() => handleRejectUser(u.id)} className='
+);
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 18');

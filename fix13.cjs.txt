@@ -1,0 +1,28 @@
+const fs = require('fs');
+let code = fs.readFileSync('App.tsx', 'utf-8');
+
+const target1 = `                    </div>
+
+                {activeTab === 'metrics' && (`;
+const rep1 = `                    </div>
+                )}
+
+                {activeTab === 'metrics' && (`;
+
+const target2 = `                    </div>
+
+                {activeTab === 'mentoria' && <AdminMentorshipPanel`;
+const rep2 = `                    </div>
+                )}
+
+                {activeTab === 'mentoria' && <AdminMentorshipPanel`;
+
+
+if (code.includes(target1)) code = code.replace(target1, rep1);
+else console.log("target1 not found");
+
+if (code.includes(target2)) code = code.replace(target2, rep2);
+else console.log("target2 not found");
+
+fs.writeFileSync('App.tsx', code);
+console.log('Fixed block 4');

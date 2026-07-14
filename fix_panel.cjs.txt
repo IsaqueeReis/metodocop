@@ -1,0 +1,33 @@
+const fs = require('fs');
+
+function processStudentPanel() {
+    let c = fs.readFileSync('mentoria-individual/StudentPanel.tsx', 'utf8');
+
+    // Widen container
+    c = c.replace(/max-w-5xl/g, 'w-full max-w-[1800px]');
+    
+    // Fix Cronograma Grid
+    c = c.replace(/grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4/g, 'grid-cols-1 md:grid-cols-3 lg:grid-cols-7 xl:grid-cols-7 2xl:grid-cols-7');
+
+    // Upgrade buttons and cards
+    c = c.replace(/bg-zinc-950 border-zinc-800 text-zinc-300/g, 'bg-black/40 backdrop-blur-md border-white/10 text-white shadow-[0_0_15px_rgba(0,0,0,0.5)]');
+    c = c.replace(/bg-black\/50 backdrop-blur-md\/30 border-zinc-800/g, 'bg-black/40 backdrop-blur-xl border-white/5 shadow-[0_0_20px_rgba(0,0,0,0.5)]');
+    c = c.replace(/bg-black\/50 backdrop-blur-md\/80 border-red-900\/50/g, 'bg-black/60 backdrop-blur-xl border-red-500/30 shadow-[0_0_25px_rgba(239,68,68,0.15)] ring-1 ring-red-500/20');
+    c = c.replace(/bg-black\/50 backdrop-blur-md border-zinc-800/g, 'bg-black/40 backdrop-blur-xl border-white/5 shadow-inner');
+    c = c.replace(/bg-zinc-950 border border-zinc-800 p-2 rounded/g, 'bg-black/40 backdrop-blur-md border border-white/5 p-3 rounded-xl shadow-lg');
+    c = c.replace(/bg-zinc-900\/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white\/10/g, 'bg-black/40 backdrop-blur-xl px-3 py-1.5 rounded-full border border-white/10 shadow-[0_0_10px_rgba(0,0,0,0.3)]');
+    c = c.replace(/bg-zinc-900 p-4 rounded-xl border border-zinc-800/g, 'bg-black/40 backdrop-blur-xl p-4 rounded-2xl border border-white/5 shadow-[0_0_20px_rgba(0,0,0,0.5)]');
+    
+    // Buttons in Tarefas de Hoje
+    c = c.replace(/hover:bg-zinc-800 text-white font-bold py-2 px-4 rounded-lg/g, 'bg-black/40 backdrop-blur-md border border-white/10 hover:border-white/30 text-white font-bold py-2 px-4 rounded-xl transition-all hover:bg-white/5');
+    c = c.replace(/hover:bg-red-900\/30 text-red-500 font-bold py-2 px-4 rounded-lg/g, 'bg-red-500/10 backdrop-blur-md border border-red-500/20 hover:border-red-500/50 hover:bg-red-500/20 text-red-500 font-bold py-2 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(239,68,68,0.1)]');
+    c = c.replace(/hover:bg-yellow-900\/30 text-yellow-500 font-bold py-2 px-4 rounded-lg/g, 'bg-yellow-500/10 backdrop-blur-md border border-yellow-500/20 hover:border-yellow-500/50 hover:bg-yellow-500/20 text-yellow-500 font-bold py-2 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(234,179,8,0.1)]');
+    c = c.replace(/hover:bg-blue-900\/30 text-blue-400 font-bold py-2 px-4 rounded-lg/g, 'bg-blue-500/10 backdrop-blur-md border border-blue-500/20 hover:border-blue-500/50 hover:bg-blue-500/20 text-blue-400 font-bold py-2 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)]');
+
+    // Add string normalizer on render for subject since it might be corrupted in DB
+    c = c.replace(/\{task\.subject\}/g, '{task.subject.replace(/Ç/g, "Ç").replace(/ã/g, "ã").replace(/í/g, "í").replace(/á/g, "á").replace(/é/g, "é").replace(/í/g, "Í").replace(/ó/g, "ó").replace(/ú/g, "ú").replace(/â/g, "â").replace(/ê/g, "ê").replace(/ô/g, "ô").replace(/õ/g, "õ").replace(/ç/g, "ç")}');
+
+    fs.writeFileSync('mentoria-individual/StudentPanel.tsx', c);
+}
+
+processStudentPanel();
